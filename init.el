@@ -1,3 +1,11 @@
+;; load-path
+(dolist (dir '("~/Documents/Script/Emacs" "~/.emacs.d/elpa" "~/.emacs.d/el-get"))
+  (when (file-exists-p dir)
+    (progn
+      (add-to-list 'load-path dir)
+      (let ((default-directory dir))
+        (normal-top-level-add-subdirs-to-load-path)))))
+
 ;; why not make these default?
 (tool-bar-mode 0)
 ;;(scroll-bar-mode 0)
@@ -25,6 +33,7 @@
 (global-font-lock-mode t)
 (setq backup-directory-alist (quote (("."  . "~/.emacs.d/"))))
 (setq help-window-select t) ; select *Help* buffer after C-h f
+(toggle-frame-fullscreen)
 
 ;; "emacsclient -nw" if the ssh host has an emacs server running
 ;; "emacs --daemon" + "emacsclient -t" to start and use emacs server, C-x C-c to quit emacsclient
@@ -40,17 +49,17 @@
 ;; revert the buffer using encoding gb2312:
 ;; C-x <RET> r gb2312 <RET>
 ;; M-x revert-buffer-with-coding-system
-(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on) ; Chinese in eshell
-(set-locale-environment 'nil) ; use the same locale with bash
-(set-language-environment 'Chinese-GB) ; for Chinese display
+(add-hook 'shell-mode-hook
+          (lambda () (set-buffer-process-coding-system 'utf-8)))
 (set-file-name-coding-system 'utf-8) ; Chinese in dired-mode
+(set-terminal-coding-system 'utf-8)
 (set-coding-system-priority 'utf-8 'chinese-gb18030 'gb2312)
 
 ;; font: xfonts-wqy, ttf-wqy-* needed. font list: fc-list | grep WenQuanYi
-;; (when (window-system) (set-fontset-font ... ))
-(set-default-font "DejaVu Sans Mono 12")
-(set-fontset-font "fontset-default"
-                  'unicode (font-spec :family "WenQuanYi Micro Hei Mono" :size 17))
+(when (and (window-system) (eq system-type "gnu/linux"))
+  (set-default-font "DejaVu Sans Mono 12")
+  (set-fontset-font "fontset-default"
+                    'unicode (font-spec :family "WenQuanYi Micro Hei Mono" :size 17)))
 
 ;; for small C program (default is 'make').
 ;; next error: 'C-x ` or 'M-n C-c C-c''
@@ -84,6 +93,7 @@
 (desktop-save-mode t)
 
 ;; w3m settings: w3m-el / emacs-w3m needed
+(require 'w3m)
 (setq w3m-home-page "http://www.google.com/ncr")
 (setq w3m-fill-column 80)
 (setq w3m-use-cookies t)
@@ -201,12 +211,6 @@
          "http://blog.sina.com.cn/rss/maboyong.xml")))
 (defalias 'news 'newsticker-show-news)
 
-(defun fullscreen (&optional f)
-  (interactive)
-  (set-frame-parameter f 'fullscreen
-                       (if (frame-parameter f 'fullscreen) nil 'fullboth)))
-(add-hook 'window-setup-hook 'fullscreen)
-
 (defun unfill-region (start end)
   "Replace newline chars in region by single spaces.
 This command does the reverse of `fill-region'."
@@ -224,6 +228,9 @@ This command does the reverse of `fill-paragraph'."
 ;; dictionary: dict-xdict, dict-wn, dictd, dictionary-el needed
 (setq dictionary-server "localhost")
 (global-set-key "\C-h\C-s" 'dictionary-search)
+
+(require 'bing-dict)
+(global-set-key (kbd "C-h C-b") 'bing-dict-brief)
 
 ;; grep the word under cursor
 (defun default-file-pattern ()
@@ -387,17 +394,6 @@ and `defcustom' forms reset their default values."
 ;; e to eval some expression value
 (setq debug-on-error t)
 ;;(setq debug-on-quit t)
-
-;; load-path
-(dolist (dir '("~/Documents/Script/Emacs" "~/.emacs.d/elpa" "~/.emacs.d/el-get"))
-  (when (file-exists-p dir)
-    (progn
-      (add-to-list 'load-path dir)
-      (let ((default-directory dir))
-        (normal-top-level-add-subdirs-to-load-path)))))
-
-(require 'bing-dict)
-(global-set-key (kbd "C-h C-b") 'bing-dict-brief)
 
 
 ;; M-x re-builder for regexp test
