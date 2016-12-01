@@ -45,8 +45,6 @@
 ;; revert the buffer using encoding gb2312:
 ;; C-x <RET> r gb2312 <RET>
 ;; M-x revert-buffer-with-coding-system
-(add-hook 'shell-mode-hook
-          (lambda () (set-buffer-process-coding-system 'utf-8)))
 (set-file-name-coding-system 'utf-8) ; Chinese in dired-mode
 (set-terminal-coding-system 'utf-8)
 
