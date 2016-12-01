@@ -56,7 +56,7 @@
 (set-coding-system-priority 'utf-8 'chinese-gb18030 'gb2312)
 
 ;; font: xfonts-wqy, ttf-wqy-* needed. font list: fc-list | grep WenQuanYi
-(when (and (window-system) (eq system-type "gnu/linux"))
+(when (and (window-system) (eq system-type 'gnu/linux))
   (set-default-font "DejaVu Sans Mono 12")
   (set-fontset-font "fontset-default"
                     'unicode (font-spec :family "WenQuanYi Micro Hei Mono" :size 17)))
