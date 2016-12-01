@@ -7,15 +7,12 @@
         (normal-top-level-add-subdirs-to-load-path)))))
 
 ;; why not make these default?
-(tool-bar-mode 0)
-;;(scroll-bar-mode 0)
 (setq mouse-avoidance-mode 'banish)
 (setq default-fill-column 80)
 (setq visible-bell nil)
 (setq inhibit-startup-message t)
 (setq column-number-mode t)
 (setq x-select-enable-clipboard t)
-(setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
 (set-clipboard-coding-system 'nil) ; allow text copy from X: 'C-V'
 (setq enable-local-variables :safe)
 (global-auto-revert-mode t)
@@ -33,7 +30,6 @@
 (global-font-lock-mode t)
 (setq backup-directory-alist (quote (("."  . "~/.emacs.d/"))))
 (setq help-window-select t) ; select *Help* buffer after C-h f
-(toggle-frame-fullscreen)
 
 ;; "emacsclient -nw" if the ssh host has an emacs server running
 ;; "emacs --daemon" + "emacsclient -t" to start and use emacs server, C-x C-c to quit emacsclient
@@ -53,13 +49,6 @@
           (lambda () (set-buffer-process-coding-system 'utf-8)))
 (set-file-name-coding-system 'utf-8) ; Chinese in dired-mode
 (set-terminal-coding-system 'utf-8)
-(set-coding-system-priority 'utf-8 'chinese-gb18030 'gb2312)
-
-;; font: xfonts-wqy, ttf-wqy-* needed. font list: fc-list | grep WenQuanYi
-(when (and (window-system) (eq system-type 'gnu/linux))
-  (set-default-font "DejaVu Sans Mono 12")
-  (set-fontset-font "fontset-default"
-                    'unicode (font-spec :family "WenQuanYi Micro Hei Mono" :size 17)))
 
 ;; for small C program (default is 'make').
 ;; next error: 'C-x ` or 'M-n C-c C-c''
@@ -72,10 +61,6 @@
   (setq c-indent-defun nil))
 (add-hook 'c-mode-hook 'my-c-mode-hook)
 (add-hook 'c++-mode-hook 'my-c-mode-hook)
-
-;; M-$ will check the spelling of the word at point
-;; M-TAB will complete the word
-(flyspell-mode t)
 
 ;; display time
 (setq display-time-day-and-date t)
@@ -91,20 +76,6 @@
 (require 'saveplace)
 (setq-default save-place t)
 (desktop-save-mode t)
-
-;; w3m settings: w3m-el / emacs-w3m needed
-(require 'w3m)
-(setq w3m-home-page "http://www.google.com/ncr")
-(setq w3m-fill-column 80)
-(setq w3m-use-cookies t)
-(setq w3m-display-inline-image t)
-(setq browse-url-browser-function 'w3m-browse-url)
-(w3m-lnum-mode) ; (w3m-lnum-follow ARG) is bound to 'f'
-(defun my-w3m-mode-hook ()
-  (local-set-key "c" (lambda () (interactive)
-                       (browse-url-chrome (w3m-print-current-url)))))
-(add-hook 'w3m-mode-hook 'my-w3m-mode-hook)
-(defalias 'chrome 'browse-url-chrome)
 
 ;; make default: copy (M-w) or cut (C-w) the current line
 (defadvice kill-ring-save (before slickcopy activate compile)
@@ -129,7 +100,7 @@
     (setq-default line-spacing 1)))
 
 ;; C-c C-c: python-shell-send-buffer; C-c C-r: python-shell-send-region
-(autoload 'python-mode "python-mode" "Python Mode." t)
+(require 'python)
 (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
 (add-to-list 'interpreter-mode-alist '("python" . python-mode))
 (add-hook 'python-mode-hook
@@ -358,12 +329,6 @@ This command does the reverse of `fill-paragraph'."
       (append-to-buffer bufb (region-beginning) (region-end))
       (ediff-buffers bufa bufb))))
 
-(defun my-eww-mode-hook ()
-  (rename-buffer "eww" t) ; rename eww buffer so sites open in new page
-  (local-set-key (kbd "j") 'next-line)
-  (local-set-key (kbd "k") 'previous-line))
-(add-hook 'eww-mode-hook 'my-eww-mode-hook)
-
 ;; eval-defun works for defvar and defcustom, but eval-last-sexp doesn't.
 ;; This function applies eval-defun for the whole buffer.
 ;; http://emacs.stackexchange.com/questions/2298/how-do-i-force-re-evaluation-of-a-defvar
@@ -378,15 +343,6 @@ and `defcustom' forms reset their default values."
       (forward-sexp)
       (eval-defun nil))))
 
-(if (version< emacs-version "24.4")
-    (progn
-      (message "old emacs: version before 24.4")
-      (menu-bar-mode -1))
-  (electric-indent-mode -1)
-  ;; package manager: M-x list-packages, i to mark, x to install
-  (require 'package)
-  (package-initialize))
-
 ;; M-x toggle-debug-on-quit to trigger debug using C-g
 ;; M-x debug-on-entry or put (debug nil args-you-want-to-check) to set breakpoints
 ;; d to step through
@@ -394,6 +350,38 @@ and `defcustom' forms reset their default values."
 ;; e to eval some expression value
 (setq debug-on-error t)
 ;;(setq debug-on-quit t)
+
+(if (version< emacs-version "24.4")
+    (progn
+      (message "old emacs: version before 24.4")
+      (menu-bar-mode -1))
+  (tool-bar-mode 0)
+  (flyspell-mode t) ; M-$ to check, M-Tab to complete
+  (electric-indent-mode -1)
+  (toggle-frame-fullscreen)
+  (set-coding-system-priority 'utf-8 'chinese-gb18030 'gb2312)
+  (setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
+  ;; font: xfonts-wqy, ttf-wqy-* needed. font list: fc-list | grep WenQuanYi
+  (when (and (window-system) (eq system-type 'gnu/linux))
+    (set-default-font "DejaVu Sans Mono 12")
+    (set-fontset-font "fontset-default"
+                      'unicode (font-spec :family "WenQuanYi Micro Hei Mono" :size 17)))
+  ;; w3m settings: w3m-el / emacs-w3m needed
+  (require 'w3m)
+  (setq w3m-home-page "http://www.google.com/ncr")
+  (setq w3m-fill-column 80)
+  (setq w3m-use-cookies t)
+  (setq w3m-display-inline-image t)
+  (setq browse-url-browser-function 'w3m-browse-url)
+  (w3m-lnum-mode)                       ; (w3m-lnum-follow ARG) is bound to 'f'
+  (defun my-w3m-mode-hook ()
+    (local-set-key "c" (lambda () (interactive)
+                         (browse-url-chrome (w3m-print-current-url)))))
+  (add-hook 'w3m-mode-hook 'my-w3m-mode-hook)
+  (defalias 'chrome 'browse-url-chrome)
+  ;; package manager: M-x list-packages, i to mark install, d to mark delete, x to exec
+  (require 'package)
+  (package-initialize))
 
 
 ;; M-x re-builder for regexp test
