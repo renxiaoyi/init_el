@@ -145,7 +145,7 @@
 (setq newsticker-url-list-defaults nil) ; clear the default list
 (setq newsticker-retrieval-interval 0) ; second
 (setq newsticker-obsolete-item-max-age 259200)  ; 3 days
-(setq newsticker-use-full-width nil)
+(setq newsticker-use-full-width t)
 (setq newsticker-url-list
       '(
         ;; ("WSJ"
