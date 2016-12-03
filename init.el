@@ -374,7 +374,9 @@ and `defcustom' forms reset their default values."
   (w3m-lnum-mode)                       ; (w3m-lnum-follow ARG) is bound to 'f'
   (defun my-w3m-mode-hook ()
     (local-set-key "c" (lambda () (interactive)
-                         (browse-url-chrome (w3m-print-current-url)))))
+                         (browse-url-chrome (w3m-print-current-url))))
+    (local-set-key "y" (lambda () (interactive)
+                         (kill-new (w3m-print-this-url)))))
   (add-hook 'w3m-mode-hook 'my-w3m-mode-hook)
   (defalias 'chrome 'browse-url-chrome)
   ;; package manager: M-x list-packages, i to mark install, d to mark delete, x to exec
