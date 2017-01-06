@@ -69,6 +69,8 @@
 (require 'ido)
 (setq ido-enable-flex-matching t) ; so that "bd" will list "abc"
 (ido-mode t)
+(global-set-key (kbd "C-s") 'isearch-forward-regexp)
+(global-set-key (kbd "C-r") 'isearch-backward-regexp)
 
 ;; save the desktop and cursor place when quit emacs
 (require 'saveplace)
@@ -346,7 +348,7 @@ and `defcustom' forms reset their default values."
 ;; d to step through
 ;; c to skip/returns from debugger
 ;; e to eval some expression value
-(setq debug-on-error t)
+(setq debug-on-error nil)
 ;;(setq debug-on-quit t)
 
 (if (version< emacs-version "24.4")
